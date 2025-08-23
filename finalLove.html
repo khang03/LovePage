@@ -18,12 +18,6 @@
     <!-- 星空html -->
     <!-- <div> -->
 
-    <audio id="bg-music" loop>
-      <source src="audio/Sau Tất Cả.mp3" type="audio/mpeg" />
-
-      Trình duyệt của bạn không hỗ trợ phát nhạc.
-    </audio>
-
     <div class="container2">
       <div class="content">
         <canvas id="universe"></canvas>
@@ -41,7 +35,7 @@
       <canvas id="pinkboard"></canvas>
 
       <div class="line">❤️ Anh thương bxa nhiều lắm</div>
-      <div class="line">❤️ Cùng nhau cố gắng yêu thương chăm sóc nhau nhé</div>
+      <!-- <div class="line">❤️ Cùng nhau cố gắng yêu thương chăm sóc nhau nhé</div>
       <div class="line">❤️ Tha thứ những lỗi lầm của anh nhaaaaaa</div>
       <div class="line">
         ❤️ Hi vọng ngày mai của ngày sau trời sẽ sáng rực rỡ
@@ -55,6 +49,7 @@
       <div class="line">❤️ Lời nói</div>
       <div class="line">❤️ Yêu Em Rất Nhiều</div>
       <div class="line">❤️ Vương Thảo</div>
+      <div class="line">❤️ Vương Thảo</div> -->
       <div class="gallery">
         <img src="images/1.jpg" alt="" />
         <img src="images/5.jpg" alt="" />
@@ -73,125 +68,153 @@
 
       <div id="lyrics"></div>
     </div>
+    <audio id="bg-music" loop>
+      <source src="audio/Sau Tất Cả.mp3" type="audio/mpeg" />
+
+      Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/particle.js"></script>
     <script src="js/universe.js"></script>
     <script>
+      // ===== PHASE ELEMENTS =====
       const lines = document.querySelectorAll(".line");
+      const gallery = document.querySelector(".gallery");
       const galleryImgs = document.querySelectorAll(".gallery img");
+      const finalVideoWrap = document.querySelector(".final-video");
+      const video = document.getElementById("love-video");
+      const lyricsDiv = document.getElementById("lyrics");
+      const bgMusic = document.getElementById("bg-music");
 
-      const finalPhoto = document.querySelector(".final-photo");
+      // Nếu cần một click để “mở khóa” autoplay trên iOS
+      // (nhạc sẽ phát khi user ấn đâu đó lần đầu)
+      document.body.addEventListener(
+        "click",
+        () => {
+          bgMusic.play().catch(() => {});
+        },
+        { once: true }
+      );
 
-      let index = 0;
-
+      // ===== PHASE 1: LINES =====
+      let lineIndex = 0;
       function showLine() {
-        lines.forEach((line) => line.classList.remove("show")); // reset
-        lines[index].classList.add("show");
+        // reset hiệu ứng
+        lines.forEach((line) => line.classList.remove("show"));
 
-        index++;
-        if (index < lines.length) {
-          setTimeout(showLine, 3000); // hiện dòng tiếp theo sau 3s
+        // show line hiện tại
+        lines[lineIndex].classList.add("show");
+
+        lineIndex++;
+        if (lineIndex < lines.length) {
+          // tiếp tục hiện dòng tiếp theo sau 3s
+          setTimeout(showLine, 3000);
         } else {
-          // khi hết dòng -> show ảnh
-          lines.forEach((line) => (line.style.display = "none"));
-
-          setTimeout(showGallery, 3000);
+          // xong hết -> ẩn toàn bộ lines rồi sang gallery
+          setTimeout(() => {
+            lines.forEach((line) => {
+              line.classList.remove("show");
+              line.style.display = "none";
+            });
+            showGallery();
+          }, 1200); // cho fade-out nhẹ
         }
       }
+
+      // ===== PHASE 2: GALLERY =====
       function showGallery() {
+        gallery.style.display = "block";
         galleryImgs.forEach((img, i) => {
           setTimeout(() => {
             img.classList.add("show");
+            // ảnh cuối cùng xong -> qua video
             if (i === galleryImgs.length - 1) {
-              // sau khi ảnh cuối trong gallery hiện thì show video
-              setTimeout(() => {
-                const finalVideo = document.querySelector(".final-video");
-                finalVideo.style.display = "block";
-
-                const video = document.getElementById("love-video");
-                video.play().catch(() => {
-                  console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
-                });
-
-                // khi video kết thúc -> ẩn hết gallery + video + lines, show lyrics
-                video.onended = () => {
-                  document
-                    .querySelectorAll(".line")
-                    .forEach((el) => (el.style.display = "none"));
-                  document.querySelector(".gallery").style.display = "none";
-                  document.querySelector(".final-video").style.display = "none";
-
-                  // show lyrics
-                  document.getElementById("lyrics").style.display = "block";
-                  loadLyrics(); // hàm bạn đã viết sẵn
-                };
-              }, 2000);
+              setTimeout(showFinalVideo, 1500);
             }
-          }, i * 1500);
+          }, i * 1200); // nhịp giữa các ảnh
         });
       }
 
-      // bắt đầu sau khi load trang
+      // ===== PHASE 3: VIDEO =====
+      function showFinalVideo() {
+        gallery.style.display = "none";
+
+        finalVideoWrap.style.display = "block";
+        // Autoplay video (muted/playsinline đã set trong HTML)
+        video.play().catch(() => {});
+        // Khi video chạy xong -> ẩn gallery + video, show lyrics
+        video.onended = () => {
+          gallery.style.display = "none";
+          finalVideoWrap.style.display = "none";
+          // Chuyển qua lyrics
+          showLyrics();
+        };
+      }
+
+      // ===== PHASE 4: LYRICS (đồng bộ với bgMusic) =====
+      async function showLyrics() {
+        lyricsDiv.style.display = "block";
+        await bgMusic.play().catch(() => {});
+
+        const lrcText = await fetch("song.lrc")
+          .then((r) => r.text())
+          .catch(() => "");
+        const lyricsData = parseLRC(lrcText);
+
+        lyricsDiv.innerHTML = "";
+
+        let currentIdx = 0;
+
+        bgMusic.currentTime = 0;
+        bgMusic.addEventListener("timeupdate", () => {
+          const t = bgMusic.currentTime;
+
+          // nhảy tới lyric hiện tại
+          while (
+            currentIdx < lyricsData.length - 1 &&
+            t >= lyricsData[currentIdx + 1].time
+          ) {
+            currentIdx++;
+          }
+
+          // xoá lyric cũ và render 5 dòng gần nhất
+          lyricsDiv.innerHTML = "";
+          const start = Math.max(0, currentIdx - 2); // lùi lại 2 dòng
+          const end = Math.min(lyricsData.length, currentIdx + 3); // +2 dòng kế tiếp
+          for (let i = start; i < end; i++) {
+            const p = document.createElement("p");
+            p.textContent = lyricsData[i].text || " ";
+            if (i === currentIdx) p.classList.add("active");
+            lyricsDiv.appendChild(p);
+          }
+        });
+      }
+
+      // ===== LRC Parser =====
+      function parseLRC(lrcText) {
+        if (!lrcText) return [];
+        const lines = lrcText.split(/\r?\n/);
+        const re = /\[(\d{2}):(\d{2}\.\d{2})\](.*)/;
+        const out = [];
+        for (const line of lines) {
+          const m = line.match(re);
+          if (!m) continue;
+          const min = parseInt(m[1], 10);
+          const sec = parseFloat(m[2]);
+          const time = min * 60 + sec;
+          const text = (m[3] || "").trim();
+          if (text) out.push({ time, text });
+        }
+        // đảm bảo tăng dần theo thời gian
+        return out.sort((a, b) => a.time - b.time);
+      }
+
+      // ===== START =====
       window.addEventListener("DOMContentLoaded", () => {
         showLine();
       });
-      // Tự động bật nhạc nếu từ trang Start chuyển qua
-      const bgMusic = document.getElementById("bg-music");
-      const playBtn = document.getElementById("pinkboard");
-
-      playBtn.addEventListener("click", () => {
-        bgMusic.play();
-        loadLyrics();
-      });
-
-      async function loadLyrics() {
-        // đường dẫn file lrc (VD: public/song/song.lrc)
-        const res = await fetch("song.lrc");
-        const text = await res.text();
-
-        // parse từng dòng
-        const lines = text
-          .split("\n")
-          .map((line) => {
-            const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
-            if (!match) return null;
-            const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
-            return { time, lyric: match[3].trim() };
-          })
-          .filter(Boolean);
-
-        const lyricsDiv = document.getElementById("lyrics");
-        lyricsDiv.innerHTML = "";
-
-        lines.forEach((line) => {
-          const p = document.createElement("p");
-          p.textContent = line.lyric;
-          p.setAttribute("data-time", line.time);
-          lyricsDiv.appendChild(p);
-        });
-
-        const audio = document.getElementById("bg-music");
-
-        let currentIndex = 0;
-        audio.addEventListener("timeupdate", () => {
-          const current = audio.currentTime;
-
-          if (
-            currentIndex < lines.length - 1 &&
-            current >= lines[currentIndex + 1].time
-          ) {
-            currentIndex++;
-          }
-          [...lyricsDiv.children].forEach((el) =>
-            el.classList.remove("active")
-          );
-          if (lyricsDiv.children[currentIndex]) {
-            lyricsDiv.children[currentIndex].classList.add("active");
-          }
-        });
-      }
     </script>
   </body>
 </html>
