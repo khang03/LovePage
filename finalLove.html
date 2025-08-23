@@ -49,7 +49,6 @@
       <div class="line">❤️ Lời nói</div>
       <div class="line">❤️ Yêu Em Rất Nhiều</div>
       <div class="line">❤️ Vương Thảo</div>
-      <div class="line">❤️ Vương Thảo</div>
       <div class="gallery">
         <img src="images/1.jpg" alt="" />
         <img src="images/5.jpg" alt="" />
@@ -100,26 +99,31 @@
 
       // ===== PHASE 1: LINES =====
       let lineIndex = 0;
+
       function showLine() {
-        // reset hiệu ứng
-        lines.forEach((line) => line.classList.remove("show"));
+        // Ẩn tất cả dòng
+        lines.forEach((line) => {
+          line.classList.remove("show");
+          line.style.display = "none";
+        });
 
-        // show line hiện tại
-        lines[lineIndex].classList.add("show");
-
-        lineIndex++;
+        // Nếu còn dòng thì show
         if (lineIndex < lines.length) {
-          // tiếp tục hiện dòng tiếp theo sau 3s
-          setTimeout(showLine, 3000);
+          const current = lines[lineIndex];
+          current.style.display = "block"; // cần để element hiện thì mới thấy hiệu ứng
+          setTimeout(() => current.classList.add("show"), 50); // delay nhẹ để transition ăn
+
+          lineIndex++;
+          setTimeout(showLine, 3000); // dòng tiếp theo
         } else {
-          // xong hết -> ẩn toàn bộ lines rồi sang gallery
+          // Hết tất cả
           setTimeout(() => {
             lines.forEach((line) => {
               line.classList.remove("show");
               line.style.display = "none";
             });
-            showGallery();
-          }, 1200); // cho fade-out nhẹ
+            showGallery(); // sang gallery
+          }, 1200); // fade-out nhẹ
         }
       }
 
