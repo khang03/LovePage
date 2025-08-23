@@ -20,20 +20,26 @@
 
     <audio id="bg-music" loop>
       <source src="audio/Sau Tất Cả.mp3" type="audio/mpeg" />
+
       Trình duyệt của bạn không hỗ trợ phát nhạc.
     </audio>
+
     <div class="container2">
       <div class="content">
         <canvas id="universe"></canvas>
       </div>
     </div>
+
     <!-- </div> -->
     <div class="title">
       <!-- EDIT HERE -->
       <h3 class="STARDUST1">08/2025</h3>
       <h1 class="STARDUST2">TheKhang &amp; VuongThao</h1>
-      <h3 class="STARDUST3">L O V E <strong>❤</strong> Y O U</h3>
-            <canvas id="pinkboard"></canvas>
+      <h3 id="pinkboard2" class="STARDUST3">
+        L O V E <strong>❤</strong> Y O U
+      </h3>
+      <img class="img" src="EDIT_ME.png" alt="JUNO_OKYO" />
+      <canvas id="pinkboard"></canvas>
 
       <div class="line">❤️ Anh thương bxa nhiều lắm</div>
       <div class="line">❤️ Cùng nhau cố gắng yêu thương chăm sóc nhau nhé</div>
@@ -48,6 +54,23 @@
       <div class="line">❤️ Lời nói</div>
       <div class="line">❤️ Yêu Em Rất Nhiều</div>
       <div class="line">❤️ Vương Thảo</div>
+      <div class="gallery">
+        <img src="images/1.jpg" alt="" />
+        <img src="images/5.jpg" alt="" />
+        <img src="images/7.jpg" alt="" />
+        <img src="images/10.jpg" alt="" />
+        <img src="images/9.jpg" alt="" />
+        <img src="images/8.jpg" alt="" />
+      </div>
+
+      <div class="final-video">
+        <video id="love-video" autoplay muted playsinline>
+          <source src="images/lovevideo.mp4" type="video/mp4" />
+          Trình duyệt không hỗ trợ video.
+        </video>
+      </div>
+
+      <div id="lyrics"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -56,6 +79,10 @@
     <script src="js/universe.js"></script>
     <script>
       const lines = document.querySelectorAll(".line");
+      const galleryImgs = document.querySelectorAll(".gallery img");
+
+      const finalPhoto = document.querySelector(".final-photo");
+
       let index = 0;
 
       function showLine() {
@@ -63,28 +90,105 @@
         lines[index].classList.add("show");
 
         index++;
-        if (localStorage.getItem("finalMusic") === "true") {
-          bgMusic.play().catch(() => {
-            console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
-          });
-          localStorage.removeItem("finalMusic");
-        }
         if (index < lines.length) {
-          setTimeout(showLine, 4000); // chờ 4s rồi hiện dòng kế tiếp
+          setTimeout(showLine, 3000); // hiện dòng tiếp theo sau 3s
+        } else {
+          // khi hết dòng -> show ảnh
+          setTimeout(showGallery, 3000);
         }
       }
-      const bgMusic = document.getElementById("bg-music");
+      function showGallery() {
+        galleryImgs.forEach((img, i) => {
+          setTimeout(() => {
+            img.classList.add("show");
+            if (i === galleryImgs.length - 1) {
+              // sau khi ảnh cuối trong gallery hiện thì show video
+              setTimeout(() => {
+                const finalVideo = document.querySelector(".final-video");
+                finalVideo.style.display = "block";
+
+                const video = document.getElementById("love-video");
+                video.play().catch(() => {
+                  console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
+                });
+
+                // khi video kết thúc -> ẩn hết gallery + video + lines, show lyrics
+                video.onended = () => {
+                  document
+                    .querySelectorAll(".line")
+                    .forEach((el) => (el.style.display = "none"));
+                  document.querySelector(".gallery").style.display = "none";
+                  document.querySelector(".final-video").style.display = "none";
+
+                  // show lyrics
+                  document.getElementById("lyrics").style.display = "block";
+                  loadLyrics(); // hàm bạn đã viết sẵn
+                };
+              }, 2000);
+            }
+          }, i * 1500);
+        });
+      }
 
       // bắt đầu sau khi load trang
       window.addEventListener("DOMContentLoaded", () => {
         showLine();
-         
       });
-const playBtn = document.getElementById("pinkboard");
+      // Tự động bật nhạc nếu từ trang Start chuyển qua
+      const bgMusic = document.getElementById("bg-music");
+      const playBtn = document.getElementById("pinkboard");
 
       playBtn.addEventListener("click", () => {
         bgMusic.play();
-      });     
+        loadLyrics();
+      });
+
+      async function loadLyrics() {
+        // đường dẫn file lrc (VD: public/song/song.lrc)
+        const res = await fetch("song.lrc");
+        const text = await res.text();
+
+        // parse từng dòng
+        const lines = text
+          .split("\n")
+          .map((line) => {
+            const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+            if (!match) return null;
+            const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
+            return { time, lyric: match[3].trim() };
+          })
+          .filter(Boolean);
+
+        const lyricsDiv = document.getElementById("lyrics");
+        lyricsDiv.innerHTML = "";
+
+        lines.forEach((line) => {
+          const p = document.createElement("p");
+          p.textContent = line.lyric;
+          p.setAttribute("data-time", line.time);
+          lyricsDiv.appendChild(p);
+        });
+
+        const audio = document.getElementById("bg-music");
+
+        let currentIndex = 0;
+        audio.addEventListener("timeupdate", () => {
+          const current = audio.currentTime;
+
+          if (
+            currentIndex < lines.length - 1 &&
+            current >= lines[currentIndex + 1].time
+          ) {
+            currentIndex++;
+          }
+          [...lyricsDiv.children].forEach((el) =>
+            el.classList.remove("active")
+          );
+          if (lyricsDiv.children[currentIndex]) {
+            lyricsDiv.children[currentIndex].classList.add("active");
+          }
+        });
+      }
     </script>
   </body>
 </html>
