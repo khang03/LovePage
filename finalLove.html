@@ -67,21 +67,20 @@
           setTimeout(showLine, 4000); // chờ 4s rồi hiện dòng kế tiếp
         }
       }
+      const bgMusic = document.getElementById("bg-music");
 
       // bắt đầu sau khi load trang
       window.addEventListener("DOMContentLoaded", () => {
         showLine();
-      });
-      // Tự động bật nhạc nếu từ trang Start chuyển qua
-      const bgMusic = document.getElementById("bg-music");
-      window.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem("finalMusic") === "true") {
+         if (localStorage.getItem("finalMusic") === "true") {
           bgMusic.play().catch(() => {
             console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
           });
           localStorage.removeItem("finalMusic");
         }
       });
+      // Tự động bật nhạc nếu từ trang Start chuyển qua
+     
     </script>
   </body>
 </html>
