@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link href="css/main.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <!-- <audio autoplay="autopaly">
+      <source src="renxi.mp3" type="audio/mp3" />
+    </audio> -->
+    <!-- 星空html -->
+    <!-- <div> -->
+
+    <audio id="bg-music" loop>
+      <source src="audio/Sau Tất Cả.mp3" type="audio/mpeg" />
+      Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
+    <div class="container2">
+      <div class="content">
+        <canvas id="universe"></canvas>
+      </div>
+    </div>
+    <!-- </div> -->
+    <div class="title">
+      <!-- EDIT HERE -->
+      <h3 class="STARDUST1">08/2025</h3>
+      <h1 class="STARDUST2">TheKhang &amp; VuongThao</h1>
+      <h3 class="STARDUST3">L O V E <strong>❤</strong> Y O U</h3>
+      <img class="img" src="EDIT_ME.png" alt="JUNO_OKYO" />
+      <canvas id="pinkboard"></canvas>
+      <div class="line">❤️ Anh thương bxa nhiều lắm</div>
+      <div class="line">❤️ Cùng nhau cố gắng yêu thương chăm sóc nhau nhé</div>
+      <div class="line">❤️ Tha thứ những lỗi lầm của anh nhaaaaaa</div>
+      <div class="line">❤️ Hi vọng ngày mai trời sẽ sáng rực rỡ</div>
+      <div class="line">❤️ Dẫn lối cho hai đứa đến cùng một gia đình</div>
+      <div class="line">❤️ Mọi thứ đều sẻ chia với nhau</div>
+      <div class="line">❤️ Và</div>
+      <div class="line">❤️ Vẫn giữ được sự ấm áp dành cho nhau</div>
+      <div class="line">❤️ Từ những cái ôm</div>
+      <div class="line">❤️ Nụ hôn</div>
+      <div class="line">❤️ Lời nói</div>
+      <div class="line">❤️ Yêu Em Rất Nhiều</div>
+      <div class="line">❤️ Vương Thảo</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/particle.js"></script>
+    <script src="js/universe.js"></script>
+    <script>
+      const lines = document.querySelectorAll(".line");
+      let index = 0;
+
+      function showLine() {
+        lines.forEach((line) => line.classList.remove("show")); // reset
+        lines[index].classList.add("show");
+
+        index++;
+        if (index < lines.length) {
+          setTimeout(showLine, 4000); // chờ 4s rồi hiện dòng kế tiếp
+        }
+      }
+
+      // bắt đầu sau khi load trang
+      window.addEventListener("DOMContentLoaded", () => {
+        showLine();
+      });
+      // Tự động bật nhạc nếu từ trang Start chuyển qua
+      const bgMusic = document.getElementById("bg-music");
+      window.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("finalMusic") === "true") {
+          bgMusic.play().catch(() => {
+            console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
+          });
+          localStorage.removeItem("finalMusic");
+        }
+      });
+    </script>
+  </body>
+</html>

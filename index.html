@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Start Game</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        background: #ffe6f2;
+        font-family: Arial, sans-serif;
+      }
+      h1 {
+        color: #d63384;
+      }
+      .btn {
+        padding: 15px 30px;
+        margin: 20px;
+        font-size: 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      #start {
+        background: #ff4d6d;
+        color: white;
+      }
+      #cancel {
+        background: #aaa;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>❤️ Chào mừng vợ Thẻo vào game tình yêu ❤️</h1>
+    <button id="start" class="btn">Bắt đầu</button>
+    <div style="position: absolute; transform: translateY(100px)" id="wrCan">
+      <button id="cancel" class="btn">Huỷ</button>
+    </div>
+
+    <script>
+      
+      const startBtn = document.getElementById("start");
+      const cancelBtn = document.getElementById("wrCan");
+
+      // Nhấn Start -> chuyển sang game.html
+      startBtn.addEventListener("click", () => {
+        localStorage.setItem("playMusic", "true"); // báo cho trang sau biết
+
+        window.location.href = "index1.html"; // đổi thành file game của bạn
+      });
+
+      // Khi hover hoặc click vào Cancel thì nó chạy lung tung
+      function moveButton() {
+        const x = Math.random() * (window.innerWidth - cancelBtn.offsetWidth);
+        const y = Math.random() * (window.innerHeight - cancelBtn.offsetHeight);
+        cancelBtn.style.left = `${x}px`;
+        cancelBtn.style.top = `${y}px`;
+      }
+
+      cancelBtn.addEventListener("mouseover", moveButton);
+      cancelBtn.addEventListener("click", moveButton);
+    </script>
+  </body>
+</html>
