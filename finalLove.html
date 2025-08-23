@@ -80,8 +80,11 @@
         showLine();
          
       });
-      // Tự động bật nhạc nếu từ trang Start chuyển qua
-     
+const playBtn = document.getElementById("pinkboard");
+
+      playBtn.addEventListener("click", () => {
+        bgMusic.play();
+      });     
     </script>
   </body>
 </html>
