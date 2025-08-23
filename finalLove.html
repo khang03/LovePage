@@ -63,6 +63,12 @@
         lines[index].classList.add("show");
 
         index++;
+        if (localStorage.getItem("finalMusic") === "true") {
+          bgMusic.play().catch(() => {
+            console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
+          });
+          localStorage.removeItem("finalMusic");
+        }
         if (index < lines.length) {
           setTimeout(showLine, 4000); // chờ 4s rồi hiện dòng kế tiếp
         }
@@ -72,12 +78,7 @@
       // bắt đầu sau khi load trang
       window.addEventListener("DOMContentLoaded", () => {
         showLine();
-         if (localStorage.getItem("finalMusic") === "true") {
-          bgMusic.play().catch(() => {
-            console.log("⚠️ Trình duyệt chặn autoplay, cần user click.");
-          });
-          localStorage.removeItem("finalMusic");
-        }
+         
       });
       // Tự động bật nhạc nếu từ trang Start chuyển qua
      
