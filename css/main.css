@@ -206,6 +206,12 @@ img {
   mask-border: var(--_m);
   clip-path: polygon(-41% 0, 50% 91%, 141% 0);
 }
+.line-container {
+  height: 50px; /* chiều cao vừa đủ cho 1 dòng */
+  overflow: hidden;
+  position: relative;
+  margin-top: 100px;
+}
 
 .line {
   font-size: 24px;
@@ -213,11 +219,15 @@ img {
   color: #fff;
   opacity: 0;
   transform: translateY(20px);
-  margin: 100px 0;
+  margin: 0; /* xoá margin lớn */
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 .line.show {
-  animation: fadeInOut 4s forwards; /* 4s: 1s fadeIn + 2s giữ + 1s fadeOut */
+  animation: fadeInOut 3s forwards; /* match với JS setTimeout */
 }
 
 @keyframes fadeInOut {
@@ -225,11 +235,11 @@ img {
     opacity: 0;
     transform: translateY(20px);
   }
-  20% {
+  10% {
     opacity: 1;
     transform: translateY(0);
   }
-  80% {
+  90% {
     opacity: 1;
     transform: translateY(0);
   }
